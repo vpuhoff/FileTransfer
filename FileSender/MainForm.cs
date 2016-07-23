@@ -15,6 +15,26 @@ namespace FileSender
         {
             InitializeComponent();
             textBox2.Click += textBox2_Click;
+            this.AllowDrop = true;
+            this.DragEnter += new DragEventHandler(Form1_DragEnter);
+            this.DragDrop += new DragEventHandler(Form1_DragDrop);
+        }
+
+        void Form1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        void Form1_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string file in files)
+            {
+                Console.WriteLine(file);
+                textBox2.Text = file;
+                button1_Click(null, null);
+            }
+            
         }
 
         void resetControls()
@@ -82,7 +102,7 @@ namespace FileSender
             // Send file info
             button1.Text = "Sending file info...";
             { // This syntax sugar is awesome
-                byte[] fileName = ASCIIEncoding.ASCII.GetBytes(file.Name);
+                byte[] fileName = Encoding.ASCII.GetBytes(file.Name);
                 byte[] fileNameLength = BitConverter.GetBytes(fileName.Length);
                 byte[] fileLength = BitConverter.GetBytes(file.Length);
                 await ns.WriteAsync(fileLength, 0, fileLength.Length);
@@ -118,8 +138,13 @@ namespace FileSender
 
             fileStream.Dispose();
             client.Close();
-            MessageBox.Show("Sending complete!");
+            //MessageBox.Show("Sending complete!");
             resetControls();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

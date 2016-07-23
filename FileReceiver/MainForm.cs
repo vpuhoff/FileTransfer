@@ -34,7 +34,7 @@ namespace FileReceiver
             TcpListener listener = TcpListener.Create(PORT);
             listener.Start();
             textBox1.Text = "Waiting for connection...";
-            TcpClient client = await listener.AcceptTcpClientAsync();
+          ret1:  TcpClient client = await listener.AcceptTcpClientAsync();
             NetworkStream ns = client.GetStream();
 
             // Get file info
@@ -51,7 +51,7 @@ namespace FileReceiver
                 await ns.ReadAsync(fileNameBytes, 0, fileNameBytes.Length);
 
                 fileLength = BitConverter.ToInt64(fileLengthBytes, 0);
-                fileName = ASCIIEncoding.ASCII.GetString(fileNameBytes);
+                fileName = Encoding.ASCII.GetString(fileNameBytes);
             }
 
             //// Get permission
@@ -89,13 +89,16 @@ namespace FileReceiver
 
             fileStream.Dispose();
             client.Close();
-            MessageBox.Show("File successfully received");
-            resetControls();
+            
+            //MessageBox.Show("File successfully received");
+            resetControls();goto ret1;
         }
 
+        Remote.Server Server = new Remote.Server();
         private void MainForm_Load(object sender, EventArgs e)
         {
-
+            Remote.Client client = new Remote.Client();
+            client.RemoteObject.GetRemoteStatus("test");
         }
     }
 }
