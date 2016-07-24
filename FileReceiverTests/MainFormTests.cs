@@ -20,7 +20,11 @@ namespace FileReceiver.Tests
             {
                 Server srv = new Server();
                 Client cl = new Client();
-                cl.RemoteObject.GetRemoteStatus("test");
+                string s = cl.RemoteObject.GetStatus();
+                if (s!="OK")
+                {
+                    Assert.Fail("Server returned falied status:"+s);
+                } 
             }
             catch (Exception ee)
             {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Remoting.Channels.Tcp;
-using static System.Runtime.Remoting.Channels.ChannelServices;
+
 
 namespace Remote
 {
@@ -11,7 +11,7 @@ namespace Remote
         {
             var tcpChannel = new TcpChannel();
             var needreg = true;
-            foreach (var item in RegisteredChannels )
+            foreach (var item in System.Runtime.Remoting.Channels.ChannelServices.RegisteredChannels)
             {
                 if (item.ChannelName==tcpChannel.ChannelName )
                 {
@@ -20,15 +20,32 @@ namespace Remote
             }
             if (needreg )
             {
-                RegisterChannel(tcpChannel,true);
+                try
+                {
+                    System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(tcpChannel, true);
+                }
+                catch (Exception)
+                {
+                }
             }
             
 
             Type requiredType = typeof(ISharedTypeInterface);
-
-            RemoteObject = (ISharedTypeInterface)Activator.GetObject(requiredType,
-            "tcp://"+ host+":"+port+"/RemoteService");
-            Console.WriteLine(RemoteObject.GetRemoteStatus("Ticket No: 3344"));
+           ret1: try
+            {
+                RemoteObject = (ISharedTypeInterface)Activator.GetObject(requiredType,
+           "tcp://" + host + ":" + port + "/RemoteService");
+                string stat = RemoteObject.GetStatus();
+                if (stat != "")
+                {
+                    Console.WriteLine(stat);
+                }
+            }
+            catch (Exception ee)
+            {
+                Console.WriteLine(ee);
+                goto ret1;
+            }
         }
     }
 }

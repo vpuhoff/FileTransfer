@@ -94,11 +94,18 @@ namespace FileReceiver
             resetControls();goto ret1;
         }
 
-        Remote.Server Server = new Remote.Server();
+        Remote.Server Server = new Remote.Server(int.Parse(File.ReadAllText("Port.inf")));
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Remote.Client client = new Remote.Client();
+            portBox.Text = File.ReadAllText("Port.inf");
+            Remote.Client client = new Remote.Client("localhost",int.Parse(portBox.Text));
             client.RemoteObject.GetRemoteStatus("test");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            File.WriteAllText("Port.inf", portBox.Text.Trim());
+            Application.Restart();
         }
     }
 }

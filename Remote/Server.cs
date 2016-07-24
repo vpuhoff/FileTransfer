@@ -1,26 +1,32 @@
 ﻿using System;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels.Tcp;
-using static System.Runtime.Remoting.Channels.ChannelServices;
-using static System.Runtime.Remoting.RemotingConfiguration;
 
 namespace Remote
 {
     public class Server
     {
-        public Server(int port = 9998)
+        private int port;
+        public int Port { get { return port; } }
+        public Server(int _port = 9998)
+        {
+            port = _port;
+            CreateServer();
+            //Console.WriteLine("Press ENTER to quitnn");
+            //Console.ReadLine();
+        }
+
+        public void CreateServer()
         {
             Console.WriteLine("Remote Server started...");
 
             var tcpChannel = new TcpChannel(port);
-            RegisterChannel(tcpChannel,true );
+            System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(tcpChannel, true);
 
             var commonInterfaceType = Type.GetType("Remote.SharedType");
 
-            RegisterWellKnownServiceType(commonInterfaceType,"RemoteService", WellKnownObjectMode.SingleCall);
+            System.Runtime.Remoting.RemotingConfiguration.RegisterWellKnownServiceType(commonInterfaceType, "RemoteService", WellKnownObjectMode.SingleCall);
 
-            Console.WriteLine("Press ENTER to quitnn");
-            Console.ReadLine();
         }
     }
 
